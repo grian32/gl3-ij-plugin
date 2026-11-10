@@ -1,19 +1,17 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.grian32.gl3ijplugin</id>
-    <name>gl3-ij-plugin</name>
+    <name>GL3 Language</name>
     <vendor>grian32</vendor>
     <description><![CDATA[
-        <p><b>gl3-ij-plugin</b> is a repository that provides a pure template to make it easier to create a new plugin project.</p>
-        <p>The main goal of this template is to speed up the setup phase of plugin development for both new and experienced developers by preconfiguring the project scaffold and CI, linking to the proper documentation pages, and keeping everything organized.</p>
+        <p><b>GL3 Language Support</b> is a plugin that adds support to IntelliJ for the GL3 Language</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+    <resource-bundle>messages.Gl3Bundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.grian32.gl3ijplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.grian32.gl3ijplugin.startup.MyProjectActivity" />
+        <fileType name="GL3" implementationClass="com.github.grian32.gl3ijplugin.Gl3FileType" fieldName="INSTANCE" language="GL3" extensions="gl3"/>
     </extensions>
 </idea-plugin>
