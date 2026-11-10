@@ -13,5 +13,6 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="GL3" implementationClass="com.github.grian32.gl3ijplugin.Gl3FileType" fieldName="INSTANCE" language="GL3" extensions="gl3"/>
+        <lang.syntaxHighlighterFactory language="GL3" implementationClass="com.github.grian32.gl3ijplugin.Gl3SyntaxHighlighterFactory"/>
     </extensions>
 </idea-plugin>
