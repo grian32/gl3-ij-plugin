@@ -15,6 +15,10 @@
         <fileType name="GL3" implementationClass="com.github.grian32.gl3ijplugin.lang.Gl3FileType" fieldName="INSTANCE" language="GL3" extensions="gl3"/>
         <lang.parserDefinition language="GL3" implementationClass="com.github.grian32.gl3ijplugin.parser.Gl3ParserDefinition"/>
         <lang.syntaxHighlighterFactory language="GL3" implementationClass="com.github.grian32.gl3ijplugin.highlighting.Gl3SyntaxHighlighterFactory"/>
+        <lang.braceMatcher language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3BraceMatcher"/>
+        <lang.commenter language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3Commenter"/>
+        <lang.foldingBuilder language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3FoldingBuilder"/>
+        <lang.quoteHandler language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3QuoteHandler"/>
         <colorSettingsPage implementation="com.github.grian32.gl3ijplugin.highlighting.Gl3ColorSettingsPage"/>
     </extensions>
 </idea-plugin>
