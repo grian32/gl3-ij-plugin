@@ -19,6 +19,8 @@
         <lang.commenter language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3Commenter"/>
         <lang.foldingBuilder language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3FoldingBuilder"/>
         <lang.quoteHandler language="GL3" implementationClass="com.github.grian32.gl3ijplugin.editor.Gl3QuoteHandler"/>
+        <externalAnnotator language="GL3" implementationClass="com.github.grian32.gl3ijplugin.toolchain.Gl3CheckAnnotator"/>
+        <notificationGroup id="GL3" displayType="BALLOON"/>
         <colorSettingsPage implementation="com.github.grian32.gl3ijplugin.highlighting.Gl3ColorSettingsPage"/>
     </extensions>
 </idea-plugin>
