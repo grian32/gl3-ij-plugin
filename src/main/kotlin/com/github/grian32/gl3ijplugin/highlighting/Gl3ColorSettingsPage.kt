@@ -1,5 +1,6 @@
-package com.github.grian32.gl3ijplugin
+package com.github.grian32.gl3ijplugin.highlighting
 
+import com.github.grian32.gl3ijplugin.lang.Gl3Icons
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor

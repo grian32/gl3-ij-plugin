@@ -1,4 +1,4 @@
-package com.github.grian32.gl3ijplugin
+package com.github.grian32.gl3ijplugin.lang
 
 import com.intellij.openapi.util.IconLoader
 

@@ -6,6 +6,7 @@ pluginManagement {
     plugins {
         id("org.jetbrains.kotlin.jvm") version "2.4.20"
         id("org.jetbrains.changelog") version "2.5.0"
+        id("org.jetbrains.grammarkit") version "2023.3.0.4"
     }
 }
 
@@ -16,6 +17,9 @@ plugins {
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
+    // the grammarkit plugin adds its own project repositories, keep using the ones declared here
+    repositoriesMode = RepositoriesMode.PREFER_SETTINGS
+
     // Configure all projects' repositories
     repositories {
         mavenCentral()

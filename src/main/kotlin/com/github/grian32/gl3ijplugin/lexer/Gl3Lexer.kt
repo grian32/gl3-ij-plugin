@@ -1,5 +1,6 @@
-package com.github.grian32.gl3ijplugin
+package com.github.grian32.gl3ijplugin.lexer
 
+import com.github.grian32.gl3ijplugin.psi.Gl3Types
 import com.intellij.lexer.LexerBase
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
@@ -62,7 +63,7 @@ class Gl3Lexer : LexerBase() {
             while (ch != '\n' && ch != NUL) {
                 readChar()
             }
-            return Gl3Tokens.COMMENT
+            return Gl3Types.COMMENT
         }
 
         val sct = singleCharToken[ch]
@@ -75,82 +76,82 @@ class Gl3Lexer : LexerBase() {
 
         when (ch) {
             '+' -> {
-                tok = Gl3Tokens.PLUS
-                tok = extendToken(tok, '=', Gl3Tokens.PLUS_ASSIGN)
+                tok = Gl3Types.PLUS
+                tok = extendToken(tok, '=', Gl3Types.PLUS_ASSIGN)
             }
             '*' -> {
-                tok = Gl3Tokens.ASTERISK
-                tok = extendToken(tok, '=', Gl3Tokens.ASTERISK_ASSIGN)
+                tok = Gl3Types.ASTERISK
+                tok = extendToken(tok, '=', Gl3Types.ASTERISK_ASSIGN)
             }
             '/' -> {
-                tok = Gl3Tokens.SLASH
-                tok = extendToken(tok, '=', Gl3Tokens.SLASH_ASSIGN)
+                tok = Gl3Types.SLASH
+                tok = extendToken(tok, '=', Gl3Types.SLASH_ASSIGN)
             }
             '%' -> {
-                tok = Gl3Tokens.PERCENT
-                tok = extendToken(tok, '=', Gl3Tokens.PERCENT_ASSIGN)
+                tok = Gl3Types.PERCENT
+                tok = extendToken(tok, '=', Gl3Types.PERCENT_ASSIGN)
             }
             '^' -> {
-                tok = Gl3Tokens.CARET
-                tok = extendToken(tok, '=', Gl3Tokens.CARET_ASSIGN)
+                tok = Gl3Types.CARET
+                tok = extendToken(tok, '=', Gl3Types.CARET_ASSIGN)
             }
             '-' -> {
-                tok = Gl3Tokens.MINUS
+                tok = Gl3Types.MINUS
                 if (peekChar() == '>') {
-                    tok = extendToken(tok, '>', Gl3Tokens.ARROW)
+                    tok = extendToken(tok, '>', Gl3Types.ARROW)
                 } else {
-                    tok = extendToken(tok, '=', Gl3Tokens.MINUS_ASSIGN)
+                    tok = extendToken(tok, '=', Gl3Types.MINUS_ASSIGN)
                 }
             }
             '&' -> {
-                tok = Gl3Tokens.AMPERSAND
+                tok = Gl3Types.AMPERSAND
                 if (peekChar() == '&') {
-                    tok = extendToken(tok, '&', Gl3Tokens.LAND)
+                    tok = extendToken(tok, '&', Gl3Types.LAND)
                 } else {
-                    tok = extendToken(tok, '=', Gl3Tokens.AMPERSAND_ASSIGN)
+                    tok = extendToken(tok, '=', Gl3Types.AMPERSAND_ASSIGN)
                 }
             }
             '|' -> {
-                tok = Gl3Tokens.PIPE
+                tok = Gl3Types.PIPE
                 if (peekChar() == '|') {
-                    tok = extendToken(tok, '|', Gl3Tokens.LOR)
+                    tok = extendToken(tok, '|', Gl3Types.LOR)
                 } else {
-                    tok = extendToken(tok, '=', Gl3Tokens.PIPE_ASSIGN)
+                    tok = extendToken(tok, '=', Gl3Types.PIPE_ASSIGN)
                 }
             }
             '=' -> {
-                tok = Gl3Tokens.ASSIGN
-                tok = extendToken(tok, '=', Gl3Tokens.EQ)
+                tok = Gl3Types.ASSIGN
+                tok = extendToken(tok, '=', Gl3Types.EQ)
             }
             '!' -> {
-                tok = Gl3Tokens.NOT
-                tok = extendToken(tok, '=', Gl3Tokens.NOTEQ)
+                tok = Gl3Types.NOT
+                tok = extendToken(tok, '=', Gl3Types.NOTEQ)
             }
             '<' -> {
-                tok = Gl3Tokens.LT
+                tok = Gl3Types.LT
                 if (peekChar() == '<') {
-                    tok = extendToken(tok, '<', Gl3Tokens.SHL)
-                    tok = extendToken(tok, '=', Gl3Tokens.SHL_ASSIGN)
+                    tok = extendToken(tok, '<', Gl3Types.SHL)
+                    tok = extendToken(tok, '=', Gl3Types.SHL_ASSIGN)
                 } else {
-                    tok = extendToken(tok, '=', Gl3Tokens.LTEQ)
+                    tok = extendToken(tok, '=', Gl3Types.LTEQ)
                 }
             }
             '>' -> {
-                tok = Gl3Tokens.GT
+                tok = Gl3Types.GT
                 if (peekChar() == '>') {
-                    tok = extendToken(tok, '>', Gl3Tokens.SHR)
-                    tok = extendToken(tok, '=', Gl3Tokens.SHR_ASSIGN)
+                    tok = extendToken(tok, '>', Gl3Types.SHR)
+                    tok = extendToken(tok, '=', Gl3Types.SHR_ASSIGN)
                 } else {
-                    tok = extendToken(tok, '=', Gl3Tokens.GTEQ)
+                    tok = extendToken(tok, '=', Gl3Types.GTEQ)
                 }
             }
             '.' -> {
                 if (peekChar() == '.' && endOffset > readPos + 1 && input[readPos + 1] == '.') {
                     readChar()
                     readChar()
-                    tok = Gl3Tokens.ELLIPSIS
+                    tok = Gl3Types.ELLIPSIS
                 } else {
-                    tok = Gl3Tokens.DOT
+                    tok = Gl3Types.DOT
                 }
             }
             NUL -> {
@@ -163,7 +164,7 @@ class Gl3Lexer : LexerBase() {
                 if (ch == '0' && peekChar() == 'x') {
                     readHexaInt()
                     readSuffix()
-                    return Gl3Tokens.INT
+                    return Gl3Types.INT
                 }
 
                 if (isDigit(ch)) {
@@ -181,13 +182,13 @@ class Gl3Lexer : LexerBase() {
 
                 if (ch == '"') {
                     readChar()
-                    tok = Gl3Tokens.STRING
+                    tok = Gl3Types.STRING
                     readString()
                 }
 
                 if (ch == '\'') {
                     readChar()
-                    tok = Gl3Tokens.CHAR
+                    tok = Gl3Types.CHAR
                     while (ch != '\'' && ch != '\n' && ch != NUL) {
                         if (ch == '\\') {
                             readEscape()
@@ -239,11 +240,11 @@ class Gl3Lexer : LexerBase() {
     }
 
     private fun readNumber(): IElementType {
-        var tt = Gl3Tokens.INT
+        var tt = Gl3Types.INT
 
         while (isDigit(ch) || ch == '.') {
             if (ch == '.') {
-                tt = Gl3Tokens.FLOAT
+                tt = Gl3Types.FLOAT
             }
             readChar()
         }
@@ -269,43 +270,43 @@ class Gl3Lexer : LexerBase() {
         const val NUL = '\u0000'
 
         val singleCharToken = mapOf(
-            '~' to Gl3Tokens.TILDE,
-            ';' to Gl3Tokens.SEMICOLON,
-            '(' to Gl3Tokens.LPAREN,
-            ')' to Gl3Tokens.RPAREN,
-            '{' to Gl3Tokens.LBRACE,
-            '}' to Gl3Tokens.RBRACE,
-            '[' to Gl3Tokens.LBRACKET,
-            ']' to Gl3Tokens.RBRACKET,
-            ',' to Gl3Tokens.COMMA,
-            ':' to Gl3Tokens.COLON,
+            '~' to Gl3Types.TILDE,
+            ';' to Gl3Types.SEMICOLON,
+            '(' to Gl3Types.LPAREN,
+            ')' to Gl3Types.RPAREN,
+            '{' to Gl3Types.LBRACE,
+            '}' to Gl3Types.RBRACE,
+            '[' to Gl3Types.LBRACKET,
+            ']' to Gl3Types.RBRACKET,
+            ',' to Gl3Types.COMMA,
+            ':' to Gl3Types.COLON,
         )
 
         fun identLookup(lit: String): IElementType = when (lit) {
             "int", "int32", "int16", "int8",
             "uint", "uint8", "uint16", "uint32",
-            "none", "bool", "float", "float32", "char" -> Gl3Tokens.TYPE
-            "def" -> Gl3Tokens.DEF
-            "fnc" -> Gl3Tokens.FNC
-            "return" -> Gl3Tokens.RETURN
-            "true" -> Gl3Tokens.TRUE
-            "false" -> Gl3Tokens.FALSE
-            "as" -> Gl3Tokens.AS
-            "sizeof" -> Gl3Tokens.SIZEOF
-            "vararg" -> Gl3Tokens.VARARG
-            "import" -> Gl3Tokens.IMPORT
-            "if" -> Gl3Tokens.IF
-            "else" -> Gl3Tokens.ELSE
-            "while" -> Gl3Tokens.WHILE
-            "struct" -> Gl3Tokens.STRUCT
-            "break" -> Gl3Tokens.BREAK
-            "continue" -> Gl3Tokens.CONTINUE
-            "global" -> Gl3Tokens.GLOBAL
-            "const" -> Gl3Tokens.CONST
-            "extern" -> Gl3Tokens.EXTERN
-            "private" -> Gl3Tokens.PRIVATE
-            "nullptr" -> Gl3Tokens.NULLPTR
-            else -> Gl3Tokens.IDENT
+            "none", "bool", "float", "float32", "char" -> Gl3Types.TYPE
+            "def" -> Gl3Types.DEF
+            "fnc" -> Gl3Types.FNC
+            "return" -> Gl3Types.RETURN
+            "true" -> Gl3Types.TRUE
+            "false" -> Gl3Types.FALSE
+            "as" -> Gl3Types.AS
+            "sizeof" -> Gl3Types.SIZEOF
+            "vararg" -> Gl3Types.VARARG
+            "import" -> Gl3Types.IMPORT
+            "if" -> Gl3Types.IF
+            "else" -> Gl3Types.ELSE
+            "while" -> Gl3Types.WHILE
+            "struct" -> Gl3Types.STRUCT
+            "break" -> Gl3Types.BREAK
+            "continue" -> Gl3Types.CONTINUE
+            "global" -> Gl3Types.GLOBAL
+            "const" -> Gl3Types.CONST
+            "extern" -> Gl3Types.EXTERN
+            "private" -> Gl3Types.PRIVATE
+            "nullptr" -> Gl3Types.NULLPTR
+            else -> Gl3Types.IDENT
         }
 
         fun isDigit(c: Char) = c in '0'..'9'

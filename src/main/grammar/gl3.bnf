@@ -1,0 +1,220 @@
+// grammar for gl3, modelled after the pratt parser in grianlang3/parser
+// precedences follow parser.go, lowest to highest
+{
+  parserClass="com.github.grian32.gl3ijplugin.parser.Gl3Parser"
+  parserUtilClass="com.github.grian32.gl3ijplugin.parser.Gl3ParserUtil"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Gl3"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.github.grian32.gl3ijplugin.psi"
+  psiImplPackage="com.github.grian32.gl3ijplugin.psi.impl"
+
+  elementTypeHolderClass="com.github.grian32.gl3ijplugin.psi.Gl3Types"
+  elementTypeClass="com.github.grian32.gl3ijplugin.psi.Gl3ElementType"
+  tokenTypeClass="com.github.grian32.gl3ijplugin.psi.Gl3TokenType"
+
+  tokens=[
+    COMMENT='regexp://[^\n]*'
+
+    INT='regexp:(0x[0-9a-fA-F]*|[0-9]+)[a-zA-Z0-9_]*'
+    FLOAT='regexp:[0-9]+\.[0-9.]*[a-zA-Z0-9_]*'
+    STRING="regexp:\"([^\"\\]|\\.)*\"?"
+    CHAR="regexp:'([^'\\\n]|\\.)*'?"
+
+    // keywords, these need to come before IDENT for live preview
+    TYPE='regexp:int|int8|int16|int32|uint|uint8|uint16|uint32|none|bool|float|float32|char'
+    DEF='def'
+    FNC='fnc'
+    RETURN='return'
+    TRUE='true'
+    FALSE='false'
+    AS='as'
+    SIZEOF='sizeof'
+    VARARG='vararg'
+    IMPORT='import'
+    IF='if'
+    ELSE='else'
+    WHILE='while'
+    STRUCT='struct'
+    BREAK='break'
+    CONTINUE='continue'
+    GLOBAL='global'
+    CONST='const'
+    EXTERN='extern'
+    PRIVATE='private'
+    NULLPTR='nullptr'
+
+    IDENT='regexp:[a-zA-Z_][a-zA-Z0-9_]*'
+
+    PLUS_ASSIGN='+='
+    MINUS_ASSIGN='-='
+    ASTERISK_ASSIGN='*='
+    SLASH_ASSIGN='/='
+    PERCENT_ASSIGN='%='
+    AMPERSAND_ASSIGN='&='
+    PIPE_ASSIGN='|='
+    CARET_ASSIGN='^='
+    SHL_ASSIGN='<<='
+    SHR_ASSIGN='>>='
+
+    LAND='&&'
+    LOR='||'
+    EQ='=='
+    NOTEQ='!='
+    LTEQ='<='
+    GTEQ='>='
+    SHL='<<'
+    SHR='>>'
+    ARROW='->'
+    ELLIPSIS='...'
+
+    PLUS='+'
+    MINUS='-'
+    ASTERISK='*'
+    SLASH='/'
+    PERCENT='%'
+    AMPERSAND='&'
+    PIPE='|'
+    CARET='^'
+    TILDE='~'
+    ASSIGN='='
+    NOT='!'
+    LT='<'
+    GT='>'
+
+    SEMICOLON=';'
+    COMMA=','
+    DOT='.'
+    COLON=':'
+    LPAREN='('
+    RPAREN=')'
+    LBRACE='{'
+    RBRACE='}'
+    LBRACKET='['
+    RBRACKET=']'
+  ]
+
+  extends(".*_expr")=expr
+}
+
+gl3_file ::= statement*
+
+// gl3 parses everything as a statement, top level or not, and leaves it to sema to reject misplaced ones
+private statement ::= statement_inner SEMICOLON? {recoverWhile=statement_recover}
+private statement_inner ::= import_stmt
+  | extern_struct_decl
+  | extern_fnc_decl
+  | fnc_decl
+  | struct_decl
+  | var_decl
+  | return_stmt
+  | if_stmt
+  | while_stmt
+  | break_stmt
+  | continue_stmt
+  | expr_stmt
+// recoverWhile also runs after a statement parses fine, so stop at anything that can start the next one
+private statement_recover ::= !(statement_start | RBRACE | SEMICOLON)
+private statement_start ::= DEF | GLOBAL | FNC | RETURN | IMPORT | IF | WHILE | STRUCT
+  | BREAK | CONTINUE | EXTERN | PRIVATE
+  | IDENT | INT | FLOAT | STRING | CHAR | TRUE | FALSE | NULLPTR | SIZEOF | VARARG
+  | LPAREN | LBRACKET | MINUS | NOT | TILDE | AMPERSAND | ASTERISK
+
+// declarations
+
+import_stmt ::= IMPORT STRING {pin=1}
+
+extern_struct_decl ::= PRIVATE? EXTERN STRUCT IDENT {pin=3}
+extern_fnc_decl ::= PRIVATE? EXTERN FNC fnc_header {pin=3}
+fnc_decl ::= PRIVATE? FNC fnc_header block {pin=2}
+
+private fnc_header ::= IDENT LPAREN param_list? RPAREN ARROW type_ref {pin=1}
+private param_list ::= ELLIPSIS | param (COMMA param)* (COMMA ELLIPSIS?)?
+param ::= type_ref IDENT
+
+struct_decl ::= PRIVATE? STRUCT IDENT LBRACE struct_field* RBRACE {pin=2}
+struct_field ::= type_ref IDENT
+
+var_decl ::= (DEF | GLOBAL CONST?) type_ref IDENT ASSIGN expr {pin=1}
+
+// a * on the next line is a deref starting a new statement, not another pointer level
+type_ref ::= (TYPE | IDENT) (<<noNewlineBefore>> ASTERISK)*
+
+// statements
+
+block ::= LBRACE statement* RBRACE {pin=1}
+
+// gl3 only skips the expression when return is directly followed by } or ;
+return_stmt ::= RETURN expr? {pin=1}
+if_stmt ::= IF expr block else_clause? {pin=1}
+else_clause ::= ELSE (if_stmt | block) {pin=1}
+while_stmt ::= WHILE expr block {pin=1}
+break_stmt ::= BREAK
+continue_stmt ::= CONTINUE
+expr_stmt ::= expr
+
+// expressions, lowest to highest precedence
+
+expr ::= assign_expr
+  | lor_expr
+  | land_expr
+  | eq_expr
+  | rel_expr
+  | cast_expr
+  | bor_expr
+  | bxor_expr
+  | band_expr
+  | shift_expr
+  | add_expr
+  | mul_expr
+  | prefix_group
+  | postfix_group
+  | index_expr
+  | primary_group
+
+// infix ops that can also start an expression (*, -, &, (, [) only continue one if they're on the same line
+assign_expr ::= expr assign_op expr {rightAssociative=true}
+private assign_op ::= ASSIGN | PLUS_ASSIGN | MINUS_ASSIGN | ASTERISK_ASSIGN | SLASH_ASSIGN | PERCENT_ASSIGN
+  | AMPERSAND_ASSIGN | PIPE_ASSIGN | CARET_ASSIGN | SHL_ASSIGN | SHR_ASSIGN
+lor_expr ::= expr LOR expr
+land_expr ::= expr LAND expr
+eq_expr ::= expr (EQ | NOTEQ) expr
+rel_expr ::= expr (LT | GT | LTEQ | GTEQ) expr
+cast_expr ::= expr AS type_ref
+bor_expr ::= expr PIPE expr
+bxor_expr ::= expr CARET expr
+band_expr ::= expr <<noNewlineBefore>> AMPERSAND expr
+shift_expr ::= expr (SHL | SHR) expr
+add_expr ::= expr (PLUS | <<noNewlineBefore>> MINUS) expr
+mul_expr ::= expr (<<noNewlineBefore>> ASTERISK | SLASH | PERCENT) expr
+
+private prefix_group ::= unary_expr | ref_expr | deref_expr
+unary_expr ::= (MINUS | NOT | TILDE) expr
+ref_expr ::= AMPERSAND expr
+deref_expr ::= ASTERISK expr
+
+// call, member access and struct init share a precedence level, so a.b(c) is (a.b)(c) like in gl3
+private postfix_group ::= call_expr | member_expr | struct_init_expr
+call_expr ::= expr <<noNewlineBefore>> LPAREN expr_list? RPAREN
+member_expr ::= expr DOT expr
+struct_init_expr ::= expr COLON LBRACE expr_list? RBRACE
+
+index_expr ::= expr <<noNewlineBefore>> LBRACKET expr RBRACKET
+
+private primary_group ::= literal_expr
+  | ident_expr
+  | paren_expr
+  | sizeof_expr
+  | vararg_expr
+  | array_lit_expr
+literal_expr ::= INT | FLOAT | STRING | CHAR | TRUE | FALSE | NULLPTR
+ident_expr ::= IDENT
+paren_expr ::= LPAREN expr RPAREN
+sizeof_expr ::= SIZEOF type_ref
+vararg_expr ::= VARARG type_ref
+array_lit_expr ::= LBRACKET type_ref SEMICOLON expr_list? RBRACKET
+
+// trailing comma is allowed, same as gl3
+private expr_list ::= expr (COMMA expr)* COMMA?

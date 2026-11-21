@@ -1,5 +1,8 @@
-package com.github.grian32.gl3ijplugin
+package com.github.grian32.gl3ijplugin.highlighting
 
+import com.github.grian32.gl3ijplugin.lexer.Gl3Lexer
+import com.github.grian32.gl3ijplugin.psi.Gl3TokenSets
+import com.github.grian32.gl3ijplugin.psi.Gl3Types
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
@@ -15,11 +18,11 @@ class Gl3SyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getHighlightingLexer() = Gl3Lexer()
 
     override fun getTokenHighlights(t: IElementType): Array<TextAttributesKey> = when (t) {
-        in Gl3Tokens.KEYWORDS-> pack(KEYWORD)
-        Gl3Tokens.TYPE -> pack(PRIMITIVE_TYPES)
-        Gl3Tokens.INT -> pack(NUMBER)
-        Gl3Tokens.STRING -> pack(STRING)
-        Gl3Tokens.COMMENT -> pack(COMMENT)
+        in Gl3TokenSets.KEYWORDS -> pack(KEYWORD)
+        Gl3Types.TYPE -> pack(PRIMITIVE_TYPES)
+        Gl3Types.INT -> pack(NUMBER)
+        Gl3Types.STRING -> pack(STRING)
+        Gl3Types.COMMENT -> pack(COMMENT)
         TokenType.BAD_CHARACTER -> pack(BAD_CHAR)
         else -> TextAttributesKey.EMPTY_ARRAY
     }
